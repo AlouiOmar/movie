@@ -34,7 +34,7 @@ const Cube = () => {
     0.1,
     100
   );
-  var renderer = new THREE.WebGLRenderer(/* { alpha: true } */);
+  var renderer = new THREE.WebGLRenderer({ alpha: true });
   renderer.setSize(window.innerWidth, window.innerHeight);
   //document.body.appendChild(renderer.domElement);
   //cubeRef.current.appendChild(renderer.domElement);
@@ -56,6 +56,7 @@ const Cube = () => {
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
   });
   // loading a shirt
+  var bol = false;
   var group;
   var mtlLoader = new MTLLoader();
   mtlLoader.load(
@@ -71,19 +72,89 @@ const Cube = () => {
         (object) => {
           console.log("obj");
           console.log(object);
+          object.name = "Baggy T";
+          console.log("material");
+          console.log(object.materials);
           group = object.clone();
+          group.name = "Baggy T";
           scene.add(group);
+          bol = true;
+          const el = scene.getObjectByName("Baggy T");
+          console.log("e1");
+          console.log(el);
+          scene.add(el);
+          //setUpLines();
+          //animate();
         }
       );
     }
   );
+  /*  var lights;
+  var point1;
+  var line;
+  var lines = [];
+
+  var raycaster = new THREE.Raycaster();
+  var setUpLines = function () {
+    lights.forEach((light, index) => {
+      line = new THREE.Line(
+        new THREE.BufferGeometry().setFromPoints([
+          new THREE.Vector3(),
+          new THREE.Vector3(),
+        ]),
+        new THREE.LineBasicMaterial({ color: "black" })
+      );
+      scene.add(line);
+      var pos = new THREE.Vector2();
+      pos.set(-0.7 + (7 / 15) * index, 0.7);
+
+      lines.push({ line: line, position: pos });
+      var mesh = getObject(light.id);
+      mesh.geometry.computeBoundingBox();
+      var center = new THREE.Vector3();
+      mesh.geometry.boundingBox.getCenter(center);
+      mesh.geometry.center();
+      mesh.position.copy(center);
+      var point2 = new THREE.Vector3();
+      point2 = mesh.position;
+      line.geometry.attributes.position.setXYZ(1, point2.x, point2.y, point2.z);
+    });
+  };
+  var getObject = function (name) {
+    for (let child of group.children) {
+      if (child.name === name) {
+        return child;
+      }
+    }
+    return null;
+  };
+  var animate = function () {
+    requestAnimationFrame(animate);
+    point1 = new THREE.Vector3();
+
+    lines.forEach((line) => {
+      raycaster.setFromCamera(line.position, camera);
+      raycaster.ray.at(4, point1);
+      line.line.geometry.attributes.position.setXYZ(
+        0,
+        point1.x,
+        point1.y,
+        point1.z
+      );
+      line.line.geometry.attributes.position.needsUpdate = true;
+    });
+    renderer.clear();
+    renderer.render(scene, camera);
+    renderer.clearDepth();
+  }; */
 
   //end loading shirt
-  var ambientLight = new THREE.AmbientLight(0xbbbbbb);
-  scene.add(ambientLight);
+
   camera.position.z = 5;
   var animate = function () {
     requestAnimationFrame(animate);
+    var ambientLight = new THREE.AmbientLight(0xbbbbbb);
+    scene.add(ambientLight);
     cube.rotation.x += 0.01;
     cube.rotation.y += 0.01;
     renderer.setSize(sizes.width, sizes.height);
