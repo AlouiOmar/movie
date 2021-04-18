@@ -34,7 +34,7 @@ const Cube = () => {
     0.1,
     100
   );
-  var renderer = new THREE.WebGLRenderer({ alpha: true });
+  var renderer = new THREE.WebGLRenderer(/* { alpha: true } */);
   renderer.setSize(window.innerWidth, window.innerHeight);
   //document.body.appendChild(renderer.domElement);
   //cubeRef.current.appendChild(renderer.domElement);
@@ -59,15 +59,18 @@ const Cube = () => {
   var group;
   var mtlLoader = new MTLLoader();
   mtlLoader.load(
-    "https://raw.githubusercontent.com/ndzyborska/three-vue/master/vue-three/front/static/assets/basic.mtl",
+    "https://raw.githubusercontent.com/AlouiOmar/movie/master/static/assets/BaggyT.mtl",
     (materials) => {
       materials.preload();
-
+      console.log("mtl");
+      console.log(materials);
       var objLoader = new OBJLoader();
       objLoader.setMaterials(materials);
       objLoader.load(
-        "https://raw.githubusercontent.com/ndzyborska/three-vue/master/vue-three/front/static/assets/basic.obj",
+        "https://raw.githubusercontent.com/AlouiOmar/movie/master/static/assets/BaggyT.obj",
         (object) => {
+          console.log("obj");
+          console.log(object);
           group = object.clone();
           scene.add(group);
         }
@@ -76,6 +79,8 @@ const Cube = () => {
   );
 
   //end loading shirt
+  var ambientLight = new THREE.AmbientLight(0xbbbbbb);
+  scene.add(ambientLight);
   camera.position.z = 5;
   var animate = function () {
     requestAnimationFrame(animate);
