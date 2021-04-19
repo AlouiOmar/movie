@@ -23,8 +23,8 @@ const Cube = () => {
   }, []);
 
   const sizes = {
-    width: 350,
-    height: 350,
+    width: 1350,
+    height: 1350,
   };
 
   var scene = new THREE.Scene();
@@ -41,11 +41,11 @@ const Cube = () => {
   var geometry = new THREE.BoxGeometry(1, 1, 1);
   var material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
   var cube = new THREE.Mesh(geometry, material);
-  scene.add(cube);
+  //scene.add(cube);
   window.addEventListener("resize", () => {
     // Update sizes
-    sizes.width = 350;
-    sizes.height = 350;
+    sizes.width = 1350;
+    sizes.height = 1350;
 
     // Update camera
     camera.aspect = sizes.width / sizes.height;
@@ -58,6 +58,38 @@ const Cube = () => {
   // loading a shirt
   var bol = false;
   var group;
+  const manager = new THREE.LoadingManager();
+  manager.onStart = function (url, itemsLoaded, itemsTotal) {
+    console.log(
+      "Started loading file: " +
+        url +
+        ".\nLoaded " +
+        itemsLoaded +
+        " of " +
+        itemsTotal +
+        " files."
+    );
+  };
+  manager.onLoad = function () {
+    console.log("Loading complete!");
+    const light = new THREE.AmbientLight(0x404040); // soft white light
+    scene.add(light);
+    renderer.render(scene, camera);
+  };
+  manager.onProgress = function (url, itemsLoaded, itemsTotal) {
+    console.log(
+      "Loading file: " +
+        url +
+        ".\nLoaded " +
+        itemsLoaded +
+        " of " +
+        itemsTotal +
+        " files."
+    );
+  };
+  manager.onError = function (url) {
+    console.log("There was an error loading " + url);
+  };
   var mtlLoader = new MTLLoader();
   mtlLoader.load(
     "https://raw.githubusercontent.com/AlouiOmar/movie/master/static/assets/BaggyT.mtl",
@@ -65,30 +97,51 @@ const Cube = () => {
       materials.preload();
       console.log("mtl");
       console.log(materials);
-      var objLoader = new OBJLoader();
-      objLoader.setMaterials(materials);
+      var objLoader = new OBJLoader(manager);
+      //objLoader.setMaterials(materials);
       objLoader.load(
         "https://raw.githubusercontent.com/AlouiOmar/movie/master/static/assets/BaggyT.obj",
         (object) => {
           console.log("obj");
           console.log(object);
+          object.traverse(function (child) {
+            //This allow us to check if the children is an instance of the Mesh constructor
+            if (child instanceof THREE.Mesh) {
+              console.log("child");
+              child.material.color = new THREE.Color(0xf25922);
+
+              //Sometimes there are some vertex normals missing in the .obj files, ThreeJs will compute them
+              child.geometry.computeVertexNormals();
+            }
+          });
+
           object.name = "Baggy T";
           console.log("material");
           console.log(object.materials);
           group = object.clone();
           group.name = "Baggy T";
+          var box = new THREE.Box3().setFromObject(group);
+          var center = new THREE.Vector3();
+          box.getCenter(center);
+          group.position.sub(center); // center the model
+          group.rotation.y = Math.PI; // rotate the model
           scene.add(group);
           bol = true;
           const el = scene.getObjectByName("Baggy T");
+          //el.position.set(0, -150, 0);
+          //el.material.color.set(0x50c878);
           console.log("e1");
           console.log(el);
-          scene.add(el);
+          /*   var material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+          var el1 = new THREE.Mesh(el, material);
+          scene.add(el1); */
           //setUpLines();
           //animate();
         }
       );
     }
   );
+
   /*  var lights;
   var point1;
   var line;
@@ -153,12 +206,11 @@ const Cube = () => {
   camera.position.z = 5;
   var animate = function () {
     requestAnimationFrame(animate);
-    var ambientLight = new THREE.AmbientLight(0xbbbbbb);
-    scene.add(ambientLight);
+    /* var ambientLight = new THREE.AmbientLight(0xbbbbbb);
+    scene.add(ambientLight); */
     cube.rotation.x += 0.01;
     cube.rotation.y += 0.01;
     renderer.setSize(sizes.width, sizes.height);
-    renderer.render(scene, camera);
   };
   animate();
   return <div ref={cubeRef} />;

@@ -12,6 +12,7 @@ import NavBar from "./components/navbar";
 import NotFound from "./components/notFound";
 import RegisterForm from "./components/registerForm";
 import Rentals from "./components/rentals";
+import Test from "./components/test";
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
       <main className="container">
         <Switch>
           <Route path="/model" component={Model}></Route>
+          <Route path="/test" component={Test}></Route>
 
           <Route path="/login" component={LoginForm}></Route>
           <Route path="/register" component={RegisterForm}></Route>

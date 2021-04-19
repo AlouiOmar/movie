@@ -5,6 +5,7 @@ import * as THREE from "three";
 import * as bodyPix from "@tensorflow-models/body-pix";
 import Webcam from "react-webcam";
 import Cube from "./cube";
+import Test from "./test";
 
 const Model = () => {
   // === THREE.JS CODE START ===
@@ -262,7 +263,7 @@ const Model = () => {
         }}
       >
         aa
-        <Cube />
+        <Test />
       </div>
       hi
       <Webcam
